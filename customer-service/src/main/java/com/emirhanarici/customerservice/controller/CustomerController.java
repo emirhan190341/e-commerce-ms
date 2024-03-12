@@ -6,7 +6,6 @@ import com.emirhanarici.customerservice.dto.UpdateCustomerRequest;
 import com.emirhanarici.customerservice.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +42,14 @@ public class CustomerController {
     public ResponseEntity<CustomerDto> updateCustomerById(@PathVariable("customerId") final Long customerId, @RequestBody @Valid UpdateCustomerRequest updateCustomerRequest) {
         return ResponseEntity
                 .ok(customerService.updateCustomerById(customerId, updateCustomerRequest));
+    }
+
+    @DeleteMapping("/{customerId}")
+    public ResponseEntity<String> deleteCustomerById(@PathVariable("customerId") Long customerId) {
+        customerService.deleteCustomerById(customerId);
+
+        return ResponseEntity
+                .ok("Customer deleted successfully");
     }
 
 
