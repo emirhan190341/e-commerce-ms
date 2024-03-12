@@ -40,26 +40,33 @@ public class CustomerService {
                 .stream()
                 .map(CustomerMapper::toCustomerDto)
                 .toList();
-
     }
-
 
     public CustomerDto getCustomerById(Long customerId) {
 
-        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new CustomerNotFoundException("Account not found: " + customerId));
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new CustomerNotFoundException("Customer not found: " + customerId));
 
         return CustomerMapper.toCustomerDto(customer);
     }
 
+    // This annotation is used to ensure that the method is executed within a transaction. If an exception is thrown, the transaction is rolled back.
     @Transactional
     public CustomerDto updateCustomerById(Long customerId, @Valid UpdateCustomerRequest updateCustomerRequest) {
 
-        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new CustomerNotFoundException("Account not found: " + customerId));
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new CustomerNotFoundException("Customer not found: " + customerId));
 
         CustomerMapper.mapForUpdating(customer, updateCustomerRequest);
 
         return CustomerMapper.toCustomerDto(customerRepository.save(customer));
-
-
     }
+
+    public void deleteCustomerById(Long customerId) {
+
+        if (!customerRepository.existsById(customerId)) {
+            throw new CustomerNotFoundException("Customer not found: " + customerId);
+        }
+
+        customerRepository.deleteById(customerId);
+    }
+
 }
