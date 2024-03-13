@@ -4,4 +4,3 @@ cloud:
       static:
       auto: false
     credentials:
-      access-key:
