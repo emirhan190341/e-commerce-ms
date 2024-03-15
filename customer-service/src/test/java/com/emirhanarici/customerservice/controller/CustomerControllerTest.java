@@ -13,6 +13,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.Mockito.when;
 
 class CustomerControllerTest extends BaseControllerTest {
@@ -47,8 +50,8 @@ class CustomerControllerTest extends BaseControllerTest {
 
         // Then
         mockMvc.perform(MockMvcRequestBuilders.post("/customers")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(request.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(request.getEmail()))
@@ -56,7 +59,36 @@ class CustomerControllerTest extends BaseControllerTest {
 
     }
 
+    @Test
+    public void whenGetAllCustomers_ReturnAllCustomer() throws Exception {
+
+        //Given
+        CustomerDto response = CustomerDto.builder()
+                .id(1L)
+                .name("John Doe")
+                .email("johndoe@gmail.com")
+                .address("Turkey")
+                .build();
+
+        CustomerDto response2 = CustomerDto.builder()
+                .id(2L)
+                .name("Jane Doe")
+                .email("johndoe@gmail.com")
+                .address("Turkey")
+                .build();
 
 
+        //When
+        when(customerService.getAllCustomers()).thenReturn(List.of(response, response2));
 
+        //Then
+        mockMvc.perform(MockMvcRequestBuilders.get("/customers")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value("1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("John Doe"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value("2"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name").value("Jane Doe"));
+
+    }
 }
